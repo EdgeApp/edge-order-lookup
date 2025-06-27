@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Lookup Tool</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Order Lookup</h1>
+            <p class="subtitle">Track your cryptocurrency transactions instantly</p>
+        </header>
+
+        <main class="main-content">
+            <form class="search-container" onsubmit="event.preventDefault(); handleSearch();">
+                <div class="input-group">
+                    <label for="orderId" class="input-label">Order ID</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="orderId" 
+                            class="order-input" 
+                            placeholder="Enter your order ID..."
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                        <button id="searchBtn" class="search-button" type="submit">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <span>Search</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <div id="results" class="results-container" style="display: none;">
+                <div class="results-header">
+                    <h2>Search Results</h2>
+                    <button id="clearBtn" class="clear-button">Clear</button>
+                </div>
+                <div id="resultsContent" class="results-content">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+
+            <div class="info-note">
+                <div class="note-icon">💡</div>
+                <div class="note-content">
+                    <div class="info-title">Supported Order Formats</div>
+                    <ul class="info-list">
+                        <li><strong>Banxa:</strong> 6-8 digit numeric (e.g., 17258381)</li>
+                        <li><strong>Paybis:</strong> PB-prefixed alphanumeric (e.g., PB25014430124TX8)</li>
+                        <li><strong>Moonpay & Simplex:</strong> UUID format</li>
+                        <li><strong>ChangeNow & LetsExchange:</strong> 14-character alphanumeric</li>
+                        <li><strong>Bity:</strong> UUID format</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+
+        <div class="partners-logos">
+            <div class="partners-title">Supported Partners</div>
+            <div class="partners-row">
+                <span class="partner-name no-hover" data-hover="Not Available">Banxa</span>
+                <a href="https://payb.is/" target="_blank" class="partner-name" data-hover="Login">Paybis</a>
+                <a href="https://buy.moonpay.com/trade_history" target="_blank" class="partner-name" data-hover="Login">Moonpay</a>
+                <a href="https://payment-status.simplex.com/?#/" target="_blank" class="partner-name" data-hover="Check Status">Simplex</a>
+                <a href="https://changenow.io/status-page" target="_blank" class="partner-name" data-hover="Check Status">ChangeNow</a>
+                <a href="https://letsexchange.io/transaction-status" target="_blank" class="partner-name" data-hover="Check Status">LetsExchange</a>
+                <a href="https://sophia.bity.com" target="_blank" class="partner-name" data-hover="Check Status">Bity</a>
+            </div>
+            <div class="partners-note">Click partner name to access order history</div>
+        </div>
+
+        <div class="attribution">
+            <div class="attribution-content">
+                <span class="attribution-text">Brought to you by</span>
+                <a href="https://edge.app/" target="_blank" class="edge-link">
+                    <img src="logos/Edge Final Logos Mark Green.png" alt="Edge Logo" class="edge-logo">
+                    <span>Edge</span>
+                </a>
+                <span class="attribution-separator">•</span>
+                <span class="attribution-text">Inspired by</span>
+                <a href="https://davidcoen.it/" target="_blank" class="attribution-link">David Coen</a>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>© 2024 Edge Wallet • Secure Order Tracking</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
