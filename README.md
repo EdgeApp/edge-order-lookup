@@ -100,4 +100,4 @@ Feel free to fork this project and make improvements. Some ideas for enhancement
 - Implement order status checking
 - Add transaction history
 - Create a mobile app version
-- Add dark mode support 
+- Add dark mode support # Force Vercel redeploy
