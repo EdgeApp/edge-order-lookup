@@ -368,6 +368,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Focus on input when page loads
     orderIdInput.focus();
     
+    // Check for search parameter in URL and auto-search if present
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    if (searchParam) {
+        orderIdInput.value = searchParam;
+        orderIdInput.classList.add('has-value');
+        handleSearch();
+    }
+    
     // Add CSS for animations
     const style = document.createElement('style');
     style.textContent = `
