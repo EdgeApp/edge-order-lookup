@@ -54,6 +54,63 @@ const partners = {
     }
 };
 
+// Cryptocurrency transaction patterns
+const cryptoPatterns = {
+    evm: {
+        name: 'Ethereum / EVM Network',
+        pattern: /^0x[0-9a-fA-F]{64}$/,
+        description: 'EVM-compatible blockchain transaction',
+        getBlockchairUrl: (txId) => `https://blockchair.com/search?q=${txId}`
+    },
+    bitcoin: {
+        name: 'Bitcoin',
+        pattern: /^[0-9a-fA-F]{64}$/,
+        description: 'Bitcoin transaction',
+        getBlockchairUrl: (txId) => `https://blockchair.com/bitcoin/transaction/${txId}`
+    },
+    solana: {
+        name: 'Solana',
+        pattern: /^[1-9A-HJ-NP-Za-km-z]{87,88}$/,
+        description: 'Solana transaction',
+        getBlockchairUrl: (txId) => `https://blockchair.com/solana/transaction/${txId}`
+    }
+};
+
+// Detect cryptocurrency transaction
+function detectCryptoTransaction(txId) {
+    // Check EVM first (most specific pattern with 0x prefix)
+    if (cryptoPatterns.evm.pattern.test(txId)) {
+        return {
+            type: 'evm',
+            ...cryptoPatterns.evm,
+            txId,
+            blockchairUrl: cryptoPatterns.evm.getBlockchairUrl(txId)
+        };
+    }
+    
+    // Check Solana (base58 encoded, typically 87-88 chars)
+    if (cryptoPatterns.solana.pattern.test(txId)) {
+        return {
+            type: 'solana',
+            ...cryptoPatterns.solana,
+            txId,
+            blockchairUrl: cryptoPatterns.solana.getBlockchairUrl(txId)
+        };
+    }
+    
+    // Check Bitcoin last (64 hex chars, but without 0x prefix)
+    if (cryptoPatterns.bitcoin.pattern.test(txId)) {
+        return {
+            type: 'bitcoin',
+            ...cryptoPatterns.bitcoin,
+            txId,
+            blockchairUrl: cryptoPatterns.bitcoin.getBlockchairUrl(txId)
+        };
+    }
+    
+    return null;
+}
+
 const simpleIconsLinks = {
   moonpay: "https://cdn.simpleicons.org/moonpay",
   simplex: "https://cdn.simpleicons.org/simplex",
@@ -99,8 +156,14 @@ async function handleSearch() {
     // Simulate API delay for better UX
     await new Promise(resolve => setTimeout(resolve, 600));
     
-    const matches = findMatchingPartners(orderId);
-    displayResults(matches, orderId);
+    // Check if it's a cryptocurrency transaction first
+    const cryptoTx = detectCryptoTransaction(orderId);
+    if (cryptoTx) {
+        displayCryptoTransaction(cryptoTx, orderId);
+    } else {
+        const matches = findMatchingPartners(orderId);
+        displayResults(matches, orderId);
+    }
     
     // Re-enable button
     searchBtn.disabled = false;
@@ -130,6 +193,59 @@ function findMatchingPartners(orderId) {
     }
     
     return matches;
+}
+
+// Display cryptocurrency transaction
+function displayCryptoTransaction(cryptoTx, txId) {
+    resultsContent.innerHTML = `
+        <div class="crypto-result">
+            <div class="crypto-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z"></path>
+                    <path d="M2 17L12 22L22 17"></path>
+                    <path d="M2 12L12 17L22 12"></path>
+                </svg>
+            </div>
+            <div class="crypto-content">
+                <div class="crypto-title">Blockchain Transaction Detected</div>
+                <div class="crypto-network">${cryptoTx.name}</div>
+                <div class="crypto-description">
+                    <strong>This is a blockchain transaction ID</strong>, not an exchange order ID.
+                    <br><br>
+                    If you're looking for an exchange order, please enter the order ID provided by your exchange partner (like Moonpay, Simplex, etc.).
+                </div>
+                <div class="crypto-tx-id">
+                    <strong>Transaction Hash:</strong>
+                    <code>${escapeHtml(txId)}</code>
+                </div>
+                <div class="crypto-actions">
+                    <a href="${cryptoTx.blockchairUrl}" target="_blank" rel="noopener noreferrer" class="result-link blockchair-link">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15,3 21,3 21,9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        View Transaction on Blockchair
+                    </a>
+                    <div class="crypto-note">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        To track blockchain transactions, use a blockchain explorer
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    resultsContainer.style.display = 'block';
+    
+    // Smooth scroll to results
+    setTimeout(() => {
+        resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 100);
 }
 
 // Display search results with explanations for multiple matches
@@ -322,4 +438,8 @@ console.log('%c• Banxa: 6-8 digit numeric', 'color: #e2e8f0; font-size: 12px;'
 console.log('%c• Paybis: PB-prefixed alphanumeric', 'color: #e2e8f0; font-size: 12px;');
 console.log('%c• Moonpay/Simplex: UUID format', 'color: #e2e8f0; font-size: 12px;');
 console.log('%c• ChangeNow/LetsExchange: 14-character', 'color: #e2e8f0; font-size: 12px;');
-console.log('%c• Bity: UUID format', 'color: #e2e8f0; font-size: 12px;'); 
+console.log('%c• Bity: UUID format', 'color: #e2e8f0; font-size: 12px;');
+console.log('%cCryptocurrency transaction formats:', 'color: #60a5fa; font-size: 14px;');
+console.log('%c• EVM: 0x followed by 64 hex characters', 'color: #e2e8f0; font-size: 12px;');
+console.log('%c• Bitcoin: 64 hex characters', 'color: #e2e8f0; font-size: 12px;');
+console.log('%c• Solana: 87-88 base58 characters', 'color: #e2e8f0; font-size: 12px;'); 
