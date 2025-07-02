@@ -269,7 +269,7 @@ function displayResults(results, orderId) {
         }
         const resultsHTML = results.map((result, index) => {
             // For Paybis, always use the static link
-            const link = result.key === 'paybis' ? 'https://payb.is' : result.fullUrl;
+            const link = result.key === 'paybis' ? 'https://payb.is' : result.key === 'banxa' ? 'https://support.banxa.com/' : result.fullUrl;
             return `
             <div class="result-item" style="animation-delay: ${index * 0.1}s">
                 <div class="result-icon ${result.key}">
@@ -286,7 +286,8 @@ function displayResults(results, orderId) {
                         </svg>
                         View Order Status
                     </a>
-                    ${result.key === 'paybis' ? '<div class="result-note">⚠️ Login may be required to view order status</div>' : ''}
+                    ${result.key === 'paybis' ? '<div class="result-note">⚠️ Login required to view order status</div>' : ''}
+                    ${result.key === 'banxa' ? '<div class="result-note" style="color: #f59e0b;"><span style="font-size:1.1em;">💬</span> Use Banxa chatbot to view order status</div>' : ''}
                 </div>
             </div>
             `;
