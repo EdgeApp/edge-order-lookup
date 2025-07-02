@@ -28,7 +28,7 @@ const partners = {
     simplex: {
         name: 'Simplex',
         pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-        url: 'https://payment-status.simplex.com/#/', // FIXED URL
+        url: 'https://payment-status.simplex.com/?#/payment/', // FIXED URL
         description: 'Cryptocurrency payment processor'
     },
     changenow: {

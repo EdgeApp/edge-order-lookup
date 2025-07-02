@@ -17,8 +17,17 @@
         <main class="main-content">
             <form class="search-container" onsubmit="event.preventDefault(); handleSearch();">
                 <div class="input-group">
-                    <label for="orderId" class="input-label">Order ID</label>
-                    <div class="input-wrapper">
+                    <label for="orderId" class="input-label">ORDER ID
+                        <span class="info-bubble" tabindex="0">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                <line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            <span class="info-tooltip">Find your order ID in your order confirmation email</span>
+                        </span>
+                    </label>
+                    <div class="input-wrapper search-bar-area">
                         <input 
                             type="text" 
                             id="orderId" 
@@ -66,15 +75,15 @@
         <div class="partners-logos">
             <div class="partners-title">Supported Partners</div>
             <div class="partners-row">
-                <span class="partner-name no-hover" data-hover="Not Available">Banxa</span>
                 <a href="https://payb.is/" target="_blank" class="partner-name" data-hover="Login">Paybis</a>
                 <a href="https://buy.moonpay.com/trade_history" target="_blank" class="partner-name" data-hover="Login">Moonpay</a>
-                <a href="https://payment-status.simplex.com/?#/" target="_blank" class="partner-name" data-hover="Check Status">Simplex</a>
+                <a href="https://payment-status.simplex.com/#/" target="_blank" class="partner-name" data-hover="Check Status">Simplex</a>
                 <a href="https://changenow.io/status-page" target="_blank" class="partner-name" data-hover="Check Status">ChangeNow</a>
                 <a href="https://letsexchange.io/transaction-status" target="_blank" class="partner-name" data-hover="Check Status">LetsExchange</a>
-                <a href="https://sophia.bity.com" target="_blank" class="partner-name" data-hover="Check Status">Bity</a>
+                <a href="https://my.bity.com/login" target="_blank" class="partner-name" data-hover="Login">Bity</a>
+                <span class="partner-name no-hover" data-hover="Not Available">Banxa</span>
             </div>
-            <div class="partners-note">Click partner name to access order history</div>
+            <div class="partners-note">Tap partner name to view order history</div>
         </div>
 
         <div class="attribution">

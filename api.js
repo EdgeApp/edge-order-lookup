@@ -30,7 +30,7 @@ const partners = {
     simplex: {
         name: 'Simplex',
         pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-        url: 'https://payment-status.simplex.com/#/',
+        url: 'https://payment-status.simplex.com/?#/payment/',
         description: 'Cryptocurrency payment processor'
     },
     changenow: {
@@ -48,7 +48,7 @@ const partners = {
     bity: {
         name: 'Bity',
         pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-        url: 'https://go.bity.com/order-status?reference=',
+        url: 'https://sophia.bity.com/?id=',
         description: 'Swiss crypto exchange & payment processor'
     }
 };
