@@ -286,7 +286,7 @@ function displayResults(results, orderId) {
                         </svg>
                         View Order Status
                     </a>
-                    ${result.key === 'paybis' ? '<div class="result-note">⚠️ Login required to view order status</div>' : ''}
+                    ${result.key === 'paybis' ? '<div class="result-note">👤 Login required to view order status</div>' : ''}
                     ${result.key === 'banxa' ? '<div class="result-note" style="color: #f59e0b;"><span style="font-size:1.1em;">💬</span> Use Banxa chatbot to view order status</div>' : ''}
                     ${result.key === 'banxa' ? `<div style='display:none'><span class='no-tel'>${escapeHtml(orderId)}</span></div>` : ''}
                 </div>
