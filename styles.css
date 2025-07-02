@@ -615,12 +615,21 @@ body::before {
     gap: 0.5rem;
 }
 
+/* Start of Selection */
 .partners-note::before {
-    content: '→';
+    content: '↑';
     color: #4be28c;
     font-weight: bold;
     font-size: 1rem;
 }
+
+.partners-note::after {
+    content: '↑';
+    color: #4be28c;
+    font-weight: bold;
+    font-size: 1rem;
+}
+/* End of Selection */
 
 /* Footer improvements */
 .footer {
@@ -968,7 +977,7 @@ body::before {
 }
 
 /* Mobile adjustments for attribution */
-@media (max-width: 600px) {
+@media (max-width: 1200px) {
     .attribution-content {
         flex-wrap: wrap;
         justify-content: center;
