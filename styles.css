@@ -828,6 +828,11 @@ body::before {
 
 /* Responsive design improvements */
 @media (max-width: 600px) {
+    .attribution-content {
+        max-width: 60vw;
+        /* min-width: 80vw; */
+    }
+
     .container {
         padding: 1rem;
     }
@@ -897,31 +902,41 @@ body::before {
     }
     
     .attribution-content {
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 0.5rem 0.75rem;
         padding: 1.25rem 0.5rem;
         width: 100%;
         border-radius: 24px;
-    }
-    .attribution-text, .attribution-link, .edge-link {
         text-align: center;
-        width: 100%;
+    }
+    .attribution-text, .edge-link {
+        display: inline;
+        width: auto;
         margin: 0;
         font-size: 1rem;
+        text-align: center;
     }
-    .edge-link {
-        justify-content: center;
-        gap: 0.5rem;
+    .attribution-inspired {
+        display: inline-block;
+        width: 100%;
+        text-align: center;
+        margin-top: 0.2em;
         font-size: 1.1rem;
     }
     .attribution-link {
-        display: block;
-        font-size: 1.1rem;
-        margin-top: 0.5rem;
         color: #4be28c;
         font-weight: 600;
+        font-size: 1.1rem;
+        margin-left: 0.25em;
+    }
+    .attribution-content {
+        line-height: 2.1;
+    }
+    .attribution-separator {
+        display: none;
     }
 }
 
@@ -1120,5 +1135,19 @@ body::before {
   user-select: all;
   -webkit-user-select: all;
   -webkit-touch-callout: none;
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+  text-size-adjust: none;
+  pointer-events: none;
+  /* Additional properties to prevent phone number detection */
+  -webkit-user-modify: read-only;
+  -moz-user-modify: read-only;
+  -ms-user-modify: read-only;
+  user-modify: read-only;
+  /* Force text rendering to prevent phone number detection */
+  text-rendering: optimizeLegibility;
+  -webkit-font-feature-settings: "liga" 0;
+  font-feature-settings: "liga" 0;
 }
 
