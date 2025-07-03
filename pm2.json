@@ -3,6 +3,9 @@
     {
       "name": "orderLookupServer",
       "script": "api.js",
+      "env": {
+        "PORT": 8008
+      },
       "error_file": "/var/log/pm2/orderLookupServer.error.log",
       "out_file": "/var/log/pm2/orderLookupServer.out.log"
     }
