@@ -1,0 +1,10 @@
+{
+  "apps": [
+    {
+      "name": "orderLookupServer",
+      "script": "api.js",
+      "error_file": "/var/log/pm2/orderLookupServer.error.log",
+      "out_file": "/var/log/pm2/orderLookupServer.out.log"
+    }
+  ]
+}
