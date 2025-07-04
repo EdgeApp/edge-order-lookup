@@ -278,7 +278,7 @@ function displayResults(results, orderId) {
                 <div class="result-content">
                     <div class="result-title">${result.name}</div>
                     <div class="result-description">${result.description}</div>
-                    <a href="${link}" target="_blank" rel="noopener noreferrer" class="result-link">
+                    <a href="${link}" target="_blank" rel="noopener noreferrer" class="result-link" onclick="countProviderStats('${result.key}')">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                             <polyline points="15,3 21,3 21,9"></polyline>
@@ -303,6 +303,18 @@ function displayResults(results, orderId) {
     setTimeout(() => {
         resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, 100);
+}
+
+/*
+This is only to count the number of times a provider is clicked on for the
+order lookup tool. No other user information is collected. The purpose is only
+to track which providers are most often looked up as an indicator of which
+providers are often problematic to users.
+*/
+async function countProviderStats(provider) {
+    const response = await fetch(`/api/stats?provider=${provider}`);
+    const data = await response.json();
+    console.log(data);
 }
 
 // Get partner icon

@@ -1,5 +1,7 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -209,6 +211,40 @@ app.post('/api/lookup', (req, res) => {
         results,
         count: results.length
     });
+});
+
+// Write to stats.json
+app.get('/api/stats', async (req, res) => {
+    // Write the provider param as an increment to the stats.json file
+    const { provider } = req.query;
+    
+    try {
+        // Use async file operations to avoid blocking
+        const statsPath = path.join(__dirname, 'stats.json');
+        
+        // Check if file exists and read current stats
+        let stats = {};
+        try {
+            const statsData = await fs.promises.readFile(statsPath, 'utf8');
+            stats = JSON.parse(statsData);
+        } catch (error) {
+            if (error.code !== 'ENOENT') {
+                throw error;
+            }
+            // File doesn't exist, start with empty stats object
+        }
+        
+        // Increment the provider count
+        stats[provider] = (stats[provider] || 0) + 1;
+        
+        // Write updated stats back to file
+        await fs.promises.writeFile(statsPath, JSON.stringify(stats, null, 2));
+        
+        res.json({ success: true, stats });
+    } catch (error) {
+        console.error('Error updating stats:', error);
+        res.status(500).json({ success: false, error: 'Failed to update stats' });
+    }
 });
 
 // Health check endpoint
