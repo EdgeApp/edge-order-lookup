@@ -9,6 +9,19 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Security headers
+app.use((req, res, next) => {
+    // Prevent clickjacking attacks
+    res.setHeader('X-Frame-Options', 'DENY');
+    // Prevent MIME type sniffing
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    // Enable basic XSS protection
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    // Prevent referrer information leakage
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+});
+
 // Partner configurations (same as in script.js)
 const partners = {
     banxa: {
@@ -255,6 +268,15 @@ app.get('/api/health', (req, res) => {
         supportedPartners: Object.keys(partners),
         supportedCryptoNetworks: Object.keys(cryptoPatterns)
     });
+});
+
+// Security: Block access to sensitive directories
+app.use('/.git', (req, res) => {
+    res.status(404).send('Not Found');
+});
+
+app.use('/node_modules', (req, res) => {
+    res.status(404).send('Not Found');
 });
 
 // Serve static files (optional - for the web interface)
