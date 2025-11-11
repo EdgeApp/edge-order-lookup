@@ -5,54 +5,8 @@ const resultsContainer = document.getElementById('results');
 const resultsContent = document.getElementById('resultsContent');
 const clearBtn = document.getElementById('clearBtn');
 
-// Partner configurations
-const partners = {
-    banxa: {
-        name: 'Banxa',
-        // Banxa order IDs are strictly 6-8 digit numeric (confirmed by docs and support)
-        pattern: /^\d{6,8}$/,
-        url: 'https://edge3.banxa.com/status/',
-        description: 'Cryptocurrency payment processor'
-    },
-    paybis: {
-        name: 'Paybis',
-        // Paybis uses PB-prefixed alphanumeric format
-        pattern: /^PB[A-Z0-9]{10,15}$/i,
-        url: 'https://onramp.payb.is/?requestId=',
-        description: 'Cryptocurrency payment processor'
-    },
-    moonpay: {
-        name: 'Moonpay',
-        pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-        url: 'https://buy.moonpay.com/transaction_receipt?transactionId=',
-        description: 'Cryptocurrency payment processor'
-    },
-    simplex: {
-        name: 'Simplex',
-        pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-        url: 'https://payment-status.simplex.com/?#/payment/',
-        description: 'Cryptocurrency payment processor'
-    },
-    changenow: {
-        name: 'ChangeNow',
-        pattern: /^[a-zA-Z0-9]{14}$/,
-        url: 'https://changenow.io/exchange/',
-        description: 'Cryptocurrency exchange service'
-    },
-    letsexchange: {
-        name: 'LetsExchange',
-        pattern: /^[a-zA-Z0-9]{14}$/,
-        url: 'https://letsexchange.io/exchange/',
-        description: 'Cryptocurrency exchange service'
-    },
-    bity: {
-        name: 'Bity',
-        // Bity now uses UUID format
-        pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-        url: 'https://sophia.bity.com/?id=',
-        description: 'Swiss crypto exchange & payment processor'
-    }
-};
+// Partner configurations - loaded from API
+let partners = null;
 
 // Cryptocurrency transaction patterns
 const cryptoPatterns = {
@@ -144,6 +98,11 @@ async function handleSearch() {
     if (!orderId) {
         shakeInput();
         return;
+    }
+    
+    // Ensure partners are loaded
+    if (!partners) {
+        await loadPartners();
     }
     
     // Disable button during search
@@ -383,8 +342,52 @@ function escapeHtml(text) {
     return text.replace(/[&<>"']/g, m => map[m]);
 }
 
+// Load partners configuration from API
+async function loadPartners() {
+    if (partners) {
+        return; // Already loaded
+    }
+    
+    try {
+        const response = await fetch('/api/partners');
+        const data = await response.json();
+        
+        if (data.success && data.partners) {
+            // Convert pattern objects back to regex
+            partners = {};
+            for (const [key, partner] of Object.entries(data.partners)) {
+                partners[key] = {
+                    name: partner.name,
+                    pattern: new RegExp(partner.pattern.source, partner.pattern.flags),
+                    url: partner.url,
+                    description: partner.description
+                };
+            }
+        } else {
+            console.error('Failed to load partners:', data);
+            throw new Error('Failed to load partners configuration');
+        }
+    } catch (error) {
+        console.error('Error loading partners:', error);
+        // Fallback: disable search functionality
+        searchBtn.disabled = true;
+        searchBtn.title = 'Failed to load partner configurations';
+        resultsContent.innerHTML = `
+            <div class="no-results">
+                <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚠️</div>
+                Failed to load partner configurations. Please refresh the page.
+            </div>
+        `;
+        resultsContainer.style.display = 'block';
+        throw error;
+    }
+}
+
 // Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    // Load partners configuration first
+    await loadPartners();
+    
     // Focus on input when page loads
     orderIdInput.focus();
     

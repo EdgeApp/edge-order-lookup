@@ -9,16 +9,18 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Partner configurations (same as in script.js)
+// Partner configurations - single source of truth
 const partners = {
     banxa: {
         name: 'Banxa',
+        // Banxa order IDs are strictly 6-8 digit numeric (confirmed by docs and support)
         pattern: /^\d{6,8}$/,
         url: 'https://edge3.banxa.com/status/',
         description: 'Cryptocurrency payment processor'
     },
     paybis: {
         name: 'Paybis',
+        // Paybis uses PB-prefixed alphanumeric format
         pattern: /^PB[A-Z0-9]{10,15}$/i,
         url: 'https://onramp.payb.is/?requestId=',
         description: 'Cryptocurrency payment processor'
@@ -49,6 +51,7 @@ const partners = {
     },
     bity: {
         name: 'Bity',
+        // Bity now uses UUID format
         pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
         url: 'https://sophia.bity.com/?id=',
         description: 'Swiss crypto exchange & payment processor'
@@ -213,6 +216,24 @@ app.post('/api/lookup', (req, res) => {
     });
 });
 
+// Get partners configuration
+app.get('/api/partners', (req, res) => {
+    // Convert regex patterns to serializable format
+    const serializedPartners = {};
+    for (const [key, partner] of Object.entries(partners)) {
+        serializedPartners[key] = {
+            name: partner.name,
+            pattern: {
+                source: partner.pattern.source,
+                flags: partner.pattern.flags
+            },
+            url: partner.url,
+            description: partner.description
+        };
+    }
+    res.json({ success: true, partners: serializedPartners });
+});
+
 // Read stats.json
 app.get('/api/stats', async (req, res) => {
     try {
@@ -292,6 +313,7 @@ app.listen(PORT, () => {
     console.log(`API endpoints:`);
     console.log(`  GET  /api/lookup/:orderId`);
     console.log(`  POST /api/lookup`);
+    console.log(`  GET  /api/partners`);
     console.log(`  GET  /api/stats`);
     console.log(`  POST /api/stats`);
     console.log(`  GET  /api/health`);
