@@ -9,16 +9,18 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Partner configurations (same as in script.js)
+// Partner configurations - single source of truth
 const partners = {
     banxa: {
         name: 'Banxa',
+        // Banxa order IDs are strictly 6-8 digit numeric (confirmed by docs and support)
         pattern: /^\d{6,8}$/,
         url: 'https://edge3.banxa.com/status/',
         description: 'Cryptocurrency payment processor'
     },
     paybis: {
         name: 'Paybis',
+        // Paybis uses PB-prefixed alphanumeric format
         pattern: /^PB[A-Z0-9]{10,15}$/i,
         url: 'https://onramp.payb.is/?requestId=',
         description: 'Cryptocurrency payment processor'
@@ -49,6 +51,7 @@ const partners = {
     },
     bity: {
         name: 'Bity',
+        // Bity now uses UUID format
         pattern: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
         url: 'https://sophia.bity.com/?id=',
         description: 'Swiss crypto exchange & payment processor'
@@ -213,10 +216,63 @@ app.post('/api/lookup', (req, res) => {
     });
 });
 
-// Write to stats.json
+// Get partners configuration
+app.get('/api/partners', (req, res) => {
+    // Convert regex patterns to serializable format
+    const serializedPartners = {};
+    for (const [key, partner] of Object.entries(partners)) {
+        serializedPartners[key] = {
+            name: partner.name,
+            pattern: {
+                source: partner.pattern.source,
+                flags: partner.pattern.flags
+            },
+            url: partner.url,
+            description: partner.description
+        };
+    }
+    res.json({ success: true, partners: serializedPartners });
+});
+
+// Read stats.json
 app.get('/api/stats', async (req, res) => {
-    // Write the provider param as an increment to the stats.json file
-    const { provider } = req.query;
+    try {
+        const statsPath = path.join(__dirname, 'stats.json');
+        
+        // Check if file exists and read current stats
+        let stats = {};
+        try {
+            const statsData = await fs.promises.readFile(statsPath, 'utf8');
+            stats = JSON.parse(statsData);
+        } catch (error) {
+            if (error.code !== 'ENOENT') {
+                throw error;
+            }
+            // File doesn't exist, return empty stats object
+        }
+        
+        res.json({ success: true, stats });
+    } catch (error) {
+        console.error('Error reading stats:', error);
+        res.status(500).json({ success: false, error: 'Failed to read stats' });
+    }
+});
+
+// Write/increment stats.json
+app.post('/api/stats', async (req, res) => {
+    const { provider } = req.body;
+    
+    if (!provider) {
+        return res.status(400).json({ success: false, error: 'Provider is required' });
+    }
+    
+    // Validate that provider is a valid partner key
+    if (!(provider in partners)) {
+        return res.status(400).json({ 
+            success: false, 
+            error: `Invalid provider. Valid providers are: ${Object.keys(partners).join(', ')}` 
+        });
+    }
     
     try {
         // Use async file operations to avoid blocking
@@ -257,14 +313,17 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Serve static files (optional - for the web interface)
-app.use(express.static('.'));
+// Serve static files for the web interface
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
     console.log(`Order Lookup API running on port ${PORT}`);
     console.log(`API endpoints:`);
     console.log(`  GET  /api/lookup/:orderId`);
     console.log(`  POST /api/lookup`);
+    console.log(`  GET  /api/partners`);
+    console.log(`  GET  /api/stats`);
+    console.log(`  POST /api/stats`);
     console.log(`  GET  /api/health`);
     console.log(`  Web interface: http://localhost:${PORT}`);
 }); 
