@@ -257,8 +257,8 @@ app.get('/api/health', (req, res) => {
     });
 });
 
-// Serve static files (optional - for the web interface)
-app.use(express.static('.'));
+// Serve static files for the web interface
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
     console.log(`Order Lookup API running on port ${PORT}`);
