@@ -266,6 +266,14 @@ app.post('/api/stats', async (req, res) => {
         return res.status(400).json({ success: false, error: 'Provider is required' });
     }
     
+    // Validate that provider is a valid partner key
+    if (!(provider in partners)) {
+        return res.status(400).json({ 
+            success: false, 
+            error: `Invalid provider. Valid providers are: ${Object.keys(partners).join(', ')}` 
+        });
+    }
+    
     try {
         // Use async file operations to avoid blocking
         const statsPath = path.join(__dirname, 'stats.json');
