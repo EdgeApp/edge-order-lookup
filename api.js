@@ -213,10 +213,37 @@ app.post('/api/lookup', (req, res) => {
     });
 });
 
-// Write to stats.json
+// Read stats.json
 app.get('/api/stats', async (req, res) => {
-    // Write the provider param as an increment to the stats.json file
-    const { provider } = req.query;
+    try {
+        const statsPath = path.join(__dirname, 'stats.json');
+        
+        // Check if file exists and read current stats
+        let stats = {};
+        try {
+            const statsData = await fs.promises.readFile(statsPath, 'utf8');
+            stats = JSON.parse(statsData);
+        } catch (error) {
+            if (error.code !== 'ENOENT') {
+                throw error;
+            }
+            // File doesn't exist, return empty stats object
+        }
+        
+        res.json({ success: true, stats });
+    } catch (error) {
+        console.error('Error reading stats:', error);
+        res.status(500).json({ success: false, error: 'Failed to read stats' });
+    }
+});
+
+// Write/increment stats.json
+app.post('/api/stats', async (req, res) => {
+    const { provider } = req.body;
+    
+    if (!provider) {
+        return res.status(400).json({ success: false, error: 'Provider is required' });
+    }
     
     try {
         // Use async file operations to avoid blocking
@@ -265,6 +292,8 @@ app.listen(PORT, () => {
     console.log(`API endpoints:`);
     console.log(`  GET  /api/lookup/:orderId`);
     console.log(`  POST /api/lookup`);
+    console.log(`  GET  /api/stats`);
+    console.log(`  POST /api/stats`);
     console.log(`  GET  /api/health`);
     console.log(`  Web interface: http://localhost:${PORT}`);
 }); 

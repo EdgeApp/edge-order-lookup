@@ -312,7 +312,13 @@ to track which providers are most often looked up as an indicator of which
 providers are often problematic to users.
 */
 async function countProviderStats(provider) {
-    const response = await fetch(`/api/stats?provider=${provider}`);
+    const response = await fetch('/api/stats', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ provider })
+    });
     const data = await response.json();
     console.log(data);
 }
